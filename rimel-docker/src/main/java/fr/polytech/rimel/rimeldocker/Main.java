@@ -3,9 +3,17 @@ package fr.polytech.rimel.rimeldocker;
 import fr.polytech.rimel.rimeldocker.api.APIException;
 import fr.polytech.rimel.rimeldocker.api.GithubAPI;
 import fr.polytech.rimel.rimeldocker.model.Repository;
+import fr.polytech.rimel.rimeldocker.transforms.HasDockerCompose;
+import fr.polytech.rimel.rimeldocker.transforms.ToString;
 import org.apache.beam.sdk.Pipeline;
+import org.apache.beam.sdk.coders.AvroCoder;
+import org.apache.beam.sdk.coders.IterableCoder;
+import org.apache.beam.sdk.coders.SerializableCoder;
+import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
+import org.apache.beam.sdk.transforms.Create;
+import org.apache.beam.sdk.transforms.ParDo;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,15 +25,19 @@ public class Main {
             System.exit(1);
         }
 
-        GithubAPI githubAPI = new GithubAPI(args[0], args[1]);
+        GithubAPI.setTOKEN(args[0]);
+        GithubAPI.setAGENT(args[1]);
+
+        List<Repository> repositories = GithubAPI.getInstance().getRepositoriesBySearchItem("topic:docker+is:public");
 
         PipelineOptions pipelineOptions = PipelineOptionsFactory.create();
         Pipeline pipeline = Pipeline.create(pipelineOptions);
 
-        List<Repository> repositories = githubAPI.getRepositoriesBySearchItem("topic:docker");
-        for (Repository r : repositories) {
-            System.out.println(r.toString());
-        }
+        pipeline
+                .apply(Create.of(repositories))
+                .apply(ParDo.of(new HasDockerCompose()))
+                .apply(ParDo.of(new ToString()));
 
+        pipeline.run().waitUntilFinish();
     }
 }

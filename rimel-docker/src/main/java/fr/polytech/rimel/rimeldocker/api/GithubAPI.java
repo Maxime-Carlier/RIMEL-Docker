@@ -8,7 +8,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.IOException;
@@ -19,38 +18,43 @@ import java.util.logging.Logger;
 
 public class GithubAPI {
 
-    private static final String API =               "https://api.github.com";
-    private static final String SEARCH_TOPIC =      API + "/search/repositories";
-    private static final String GET_REPOSITORY =    API + "/repos";
-    private static final String ID = "id";
-    private static final String FULL_NAME = "full_name";
-    private static final String HTML_URL = "html_url";
-    private static final String FORK = "fork";
-    private static final String CREATED_AT = "created_at";
+    private static final    String API =               "https://api.github.com";
+    private static final    String SEARCH_TOPIC =      API + "/search/repositories";
+    private static final    String SEARCH_CODE =       API + "/search/code";
 
-    private static String AUTHORIZATION = "Authorization";
-    private static String TOKEN = "Bearer 1a3ea623f809bef78d84c747fa757849a19e499a";
-    private static String USER_AGENT = "User-agent";
-    private static String AGENT = "AjroudRami";
+    private static final    String ID =                "id";
+    private static final    String FULL_NAME =         "full_name";
+    private static final    String HTML_URL =          "html_url";
+    private static final    String FORK =              "fork";
+    private static final    String CREATED_AT =        "created_at";
 
+    private static          String AUTHORIZATION =      "Authorization";
+    private static          String TOKEN =              "Bearer 1a3ea623f809bef78d84c747fa757849a19e499a";
+    private static          String USER_AGENT =         "User-agent";
+    private static          String AGENT =              "AjroudRami";
+
+    private static GithubAPI instance = null;
 
     private static Logger LOGGER = Logger.getLogger(GithubAPI.class.getName());
 
-    private static final DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
-
     private OkHttpClient client;
 
-
+    // Search and other request don't share the same rate limit
     private int remainingRequest;
     private long timeToReset;
 
     private int searchRemaining;
     private long timeToSearchReset;
 
-    public GithubAPI(String token, String username) {
+    private GithubAPI() {
         client = new OkHttpClient();
-        TOKEN = token;
-        AGENT = username;
+    }
+
+    public static GithubAPI getInstance() {
+        if (instance == null) {
+            instance = new GithubAPI();
+        }
+        return instance;
     }
 
     /**
@@ -70,7 +74,7 @@ public class GithubAPI {
         Response response = client.newCall(request).execute();
         String remaining = response.header("x-ratelimit-remaining");
         String reset = response.header("x-ratelimit-reset");
-        updateLimits(remaining, reset);
+        updateSearchLimits(remaining, reset);
         if (response.code() != 200) {
             throw new APIException("Response code: " + response.code() + " " + response.message());
         }
@@ -93,25 +97,41 @@ public class GithubAPI {
             String url = jsonArray.get(i).getAsJsonObject().get(HTML_URL).getAsString();
             boolean fork = jsonArray.get(i).getAsJsonObject().get(FORK).getAsBoolean();
             String createdAt = jsonArray.get(i).getAsJsonObject().get(CREATED_AT).getAsString();
-            DateTime createdDateTime = parser.parseDateTime(createdAt);
+            DateTime createdDateTime = ISODateTimeFormat.dateTimeParser().parseDateTime(createdAt);
             repository.setId(id);
             repository.setFork(fork);
             repository.setName(name);
             repository.setUrl(url);
-            repository.setCreationDate(createdDateTime);
             repos.add(repository);
         }
         return repos;
     }
 
-    private void updateLimits(String remaining, String reset) {
+    public boolean searchDockerCompose(String repositoryName) throws APIException, IOException {
+        if (!canSendSearchRequest()) throw new APIException("Cannot send request");
+        Request request = new Request.Builder()
+                .addHeader(AUTHORIZATION, TOKEN)
+                .addHeader(USER_AGENT, AGENT)
+                .url(SEARCH_CODE + "?q=filename:docker-compose.yml+repo:" + repositoryName)
+                .build();
+        Response response = client.newCall(request).execute();
+        String remaining = response.header("x-ratelimit-remaining");
+        String reset = response.header("x-ratelimit-reset");
         this.searchRemaining = (remaining == null) ? -1 : Integer.parseInt(remaining);
         this.timeToSearchReset = (reset == null) ? this.timeToSearchReset : Long.parseLong(reset);
+        //LOGGER.log(Level.INFO, "Remaining search: " + searchRemaining);
+        if (response.code() != 200)
+            throw new APIException("Response code: " + response.code() + " " + response.message()+"\n"+response.body().string());
+        String json = response.body().string();
+        JsonParser parser = new JsonParser();
+        JsonObject jsonObject = parser.parse(json).getAsJsonObject();
+        int nbDockerCompose = jsonObject.get("total_count").getAsInt();
+        return nbDockerCompose != 0;
     }
 
-    private boolean canSendRequest() {
-        if (remainingRequest > 0 | remainingRequest == -1) return true;
-        else return timeToReset - (System.currentTimeMillis() / 1000) < 0;
+    private void updateSearchLimits(String remaining, String reset) {
+        this.searchRemaining = (remaining == null) ? -1 : Integer.parseInt(remaining);
+        this.timeToSearchReset = (reset == null) ? this.timeToSearchReset : Long.parseLong(reset);
     }
 
     private boolean canSendSearchRequest() {
@@ -122,5 +142,13 @@ public class GithubAPI {
             LOGGER.log(Level.SEVERE, "time :" + (timeToSearchReset - (System.currentTimeMillis() / 1000)) + " search remaining : " + searchRemaining);
             return false;
         }
+    }
+
+    public static void setTOKEN(String TOKEN) {
+        GithubAPI.TOKEN = TOKEN;
+    }
+
+    public static void setAGENT(String AGENT) {
+        GithubAPI.AGENT = AGENT;
     }
 }

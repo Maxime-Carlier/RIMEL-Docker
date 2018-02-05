@@ -1,17 +1,22 @@
 package fr.polytech.rimel.rimeldocker.model;
 
+import org.apache.avro.reflect.Nullable;
+import org.apache.beam.sdk.coders.AvroCoder;
+import org.apache.beam.sdk.coders.DefaultCoder;
 import org.joda.time.DateTime;
 
-public class Repository {
 
+@DefaultCoder(AvroCoder.class)
+public class Repository {
 
     private long        id;
     private String      name;
     private String      url;
     private boolean     fork;
-    private DateTime    creationDate;
+    private boolean     hasDockerCompose;
 
     public Repository() {
+        hasDockerCompose = false;
     }
 
     public long getId() {
@@ -46,12 +51,22 @@ public class Repository {
         this.fork = fork;
     }
 
-    public DateTime getCreationDate() {
-        return creationDate;
+    public boolean isHasDockerCompose() {
+        return hasDockerCompose;
     }
 
-    public void setCreationDate(DateTime creationDate) {
-        this.creationDate = creationDate;
+    public void setHasDockerCompose(boolean hasDockerCompose) {
+        this.hasDockerCompose = hasDockerCompose;
+    }
+
+    public Repository clone() {
+        Repository r = new Repository();
+        r.setId(this.id);
+        r.setName(this.name);
+        r.setUrl(this.url);
+        r.setFork(this.fork);
+        r.setHasDockerCompose(this.hasDockerCompose);
+        return r;
     }
 
     @Override
@@ -61,7 +76,7 @@ public class Repository {
                 ", name='" + name + '\'' +
                 ", url='" + url + '\'' +
                 ", fork=" + fork +
-                ", creationDate=" + creationDate +
+                ", hasDockerCompose=" + hasDockerCompose +
                 '}';
     }
 }

@@ -1,9 +1,7 @@
 package fr.polytech.rimel.rimeldocker.model;
 
-import org.apache.avro.reflect.Nullable;
 import org.apache.beam.sdk.coders.AvroCoder;
 import org.apache.beam.sdk.coders.DefaultCoder;
-import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,12 +17,14 @@ public class Repository {
     private String      name;
     private String      url;
     private List<String> dockerPaths;
+    private Map<String, List<CommitHistory>> commitHistoryMap;
     private boolean     fork;
     private boolean     hasDockerCompose;
 
     public Repository() {
         hasDockerCompose = false;
         dockerPaths = new ArrayList<>();
+        commitHistoryMap = new HashMap<>();
     }
 
     public long getId() {
@@ -83,13 +83,24 @@ public class Repository {
         this.dockerPaths = dockerPaths;
     }
 
+    public Map<String, List<CommitHistory>> getCommitHistoryMap() {
+        return commitHistoryMap;
+    }
+
+    public void setCommitHistoryMap(Map<String, List<CommitHistory>> commitHistoryMap) {
+        this.commitHistoryMap = commitHistoryMap;
+    }
+
     public Repository clone() {
         Repository r = new Repository();
         r.setId(this.id);
         r.setName(this.name);
         r.setUrl(this.url);
         r.setFork(this.fork);
+        r.setOwner(this.owner);
         r.setHasDockerCompose(this.hasDockerCompose);
+        r.setDockerPaths(this.dockerPaths);
+        r.setCommitHistoryMap(this.commitHistoryMap);
         return r;
     }
 
@@ -101,6 +112,7 @@ public class Repository {
                 ", name='" + name + '\'' +
                 ", url='" + url + '\'' +
                 ", dockerPaths=" + dockerPaths +
+                ", commitHistoryMap=" + commitHistoryMap +
                 ", fork=" + fork +
                 ", hasDockerCompose=" + hasDockerCompose +
                 '}';

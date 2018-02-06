@@ -6,7 +6,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import fr.polytech.rimel.rimeldocker.api.APIException;
 import fr.polytech.rimel.rimeldocker.api.GithubAPI;
 import fr.polytech.rimel.rimeldocker.model.CommitHistory;
-import fr.polytech.rimel.rimeldocker.model.Metrics;
 import fr.polytech.rimel.rimeldocker.model.Repository;
 import fr.polytech.rimel.rimeldocker.model.tracer.DockerCompose;
 import fr.polytech.rimel.rimeldocker.model.tracer.File;
@@ -23,15 +22,17 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+/**
+ * For a given repository, we extract the history of the docker compose file
+ */
 @DefaultCoder(AvroCoder.class)
-public class TraceDockerCompose extends DoFn<Repository, Metrics> {
+public class TraceDockerCompose extends DoFn<Repository, Repository> {
 
     private static Logger LOGGER = Logger.getLogger(TraceDockerCompose.class.getName());
 
     @ProcessElement
     public void processElement(ProcessContext context) throws APIException, IOException {
-        Repository repository = context.element();
+        Repository repository = context.element().clone();
         Map<String , List<CommitHistory>> commitMap = new HashMap<>();
         for (String path : repository.getDockerPaths()) {
             LOGGER.log(Level.INFO, "Processing commit history from file " + path
@@ -41,10 +42,8 @@ public class TraceDockerCompose extends DoFn<Repository, Metrics> {
             commitMap.put(path, commitHistories);
         }
         processFileHistory(commitMap);
-        Metrics metrics = new Metrics();
-        metrics.setCommitHistories(commitMap);
-        metrics.setRepository(repository);
-        context.output(metrics);
+        repository.setCommitHistoryMap(commitMap);
+        context.output(repository);
     }
 
 

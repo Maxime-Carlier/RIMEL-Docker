@@ -1,17 +1,10 @@
 package fr.polytech.rimel.rimeldocker;
 
 import fr.polytech.rimel.rimeldocker.api.APIException;
-import fr.polytech.rimel.rimeldocker.api.GithubAPI;
 import fr.polytech.rimel.rimeldocker.model.Repository;
-import fr.polytech.rimel.rimeldocker.transforms.HasDockerCompose;
-import fr.polytech.rimel.rimeldocker.transforms.MapToString;
-import fr.polytech.rimel.rimeldocker.transforms.ToString;
+import fr.polytech.rimel.rimeldocker.transforms.ToJson;
 import fr.polytech.rimel.rimeldocker.transforms.TraceDockerCompose;
 import org.apache.beam.sdk.Pipeline;
-import org.apache.beam.sdk.coders.AvroCoder;
-import org.apache.beam.sdk.coders.IterableCoder;
-import org.apache.beam.sdk.coders.SerializableCoder;
-import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.Create;
@@ -56,7 +49,7 @@ public class Main {
         pipeline
                 .apply(Create.of(repositories))
                 .apply(ParDo.of(new TraceDockerCompose()))
-                .apply(ParDo.of(new MapToString()));
+                .apply(ParDo.of(new ToJson()));
 
         pipeline.run().waitUntilFinish();
     }

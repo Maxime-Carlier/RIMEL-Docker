@@ -144,6 +144,62 @@ public class GithubAPI {
         }
     }
 
+
+    /*
+            Docker compose history tracing
+            @author danial
+     */
+
+    private static final String BASE_URL = "https://api.github.com/repos/";
+    private static final String CLIENT_ID = "9e0352ec72f276dfc007";
+    private static final String CLIENT_SECRET = "7aa5bf7de2646291e1e1fbd4c2439857659ec7e0";
+    private static final String GIT_CRED = "client_id="+CLIENT_ID+"&client_secret="+CLIENT_SECRET;
+    private static final String PER_PAGE = "per_page=100";
+    private static final String SHA = "sha=";
+    private static final int SLEEP_DURATION = 60000;
+
+    public String retrieveCommits(String owner, String repository, String filePath) throws IOException, InterruptedException {
+        return establishConnection(BASE_URL+owner+"/"+repository+"/commits?path="+filePath+"&"+PER_PAGE+"&"+GIT_CRED);
+    }
+
+    public String retrieveCommits(String owner, String repository, String filePath, String sha) throws IOException, InterruptedException {
+        return establishConnection(BASE_URL+owner+"/"+repository+"/commits?path="+filePath+"&"+PER_PAGE+"&"+SHA+sha+"&"+GIT_CRED);
+    }
+
+    public String retrieveCommit(String stringURL) throws IOException,InterruptedException {
+        return establishConnection(stringURL+"?"+GIT_CRED);
+    }
+
+    public String retrieveFile(String stringURL) throws IOException, InterruptedException {
+        return establishConnection(stringURL);
+    }
+
+    private String establishConnection(String url) throws IOException, InterruptedException {
+
+        com.squareup.okhttp.OkHttpClient client = new com.squareup.okhttp.OkHttpClient();
+        com.squareup.okhttp.Request request = new com.squareup.okhttp.Request.Builder()
+                .url(url)
+                .get()
+                .addHeader("content-type", "application/javascript")
+                .addHeader("cache-control", "no-cache")
+                .addHeader("postman-token", "4d2b8b25-2b29-fed6-f125-434710ae15e1")
+                .build();
+
+
+        com.squareup.okhttp.Response response = client.newCall(request).execute();
+        if (response.code() != 200) {
+            if (response.code() == 403) {
+                // Sleep for 1 minute if our session is revoke
+                Thread.sleep(SLEEP_DURATION);
+                return establishConnection(url);
+            } else {
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + response.code());
+            }
+        }
+        return response.body().string();
+    }
+
     public static void setTOKEN(String TOKEN) {
         GithubAPI.TOKEN = TOKEN;
     }

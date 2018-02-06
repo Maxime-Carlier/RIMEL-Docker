@@ -5,18 +5,26 @@ import org.apache.beam.sdk.coders.AvroCoder;
 import org.apache.beam.sdk.coders.DefaultCoder;
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 @DefaultCoder(AvroCoder.class)
 public class Repository {
 
     private long        id;
+    private String      owner;
     private String      name;
     private String      url;
+    private List<String> dockerPaths;
     private boolean     fork;
     private boolean     hasDockerCompose;
 
     public Repository() {
         hasDockerCompose = false;
+        dockerPaths = new ArrayList<>();
     }
 
     public long getId() {
@@ -59,6 +67,22 @@ public class Repository {
         this.hasDockerCompose = hasDockerCompose;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public List<String> getDockerPaths() {
+        return dockerPaths;
+    }
+
+    public void setDockerPaths(List<String> dockerPaths) {
+        this.dockerPaths = dockerPaths;
+    }
+
     public Repository clone() {
         Repository r = new Repository();
         r.setId(this.id);
@@ -73,8 +97,10 @@ public class Repository {
     public String toString() {
         return "Repository{" +
                 "id=" + id +
+                ", owner='" + owner + '\'' +
                 ", name='" + name + '\'' +
                 ", url='" + url + '\'' +
+                ", dockerPaths=" + dockerPaths +
                 ", fork=" + fork +
                 ", hasDockerCompose=" + hasDockerCompose +
                 '}';

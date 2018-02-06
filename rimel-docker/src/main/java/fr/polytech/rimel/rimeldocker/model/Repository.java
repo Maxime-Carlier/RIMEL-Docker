@@ -1,5 +1,6 @@
 package fr.polytech.rimel.rimeldocker.model;
 
+import fr.polytech.rimel.rimeldocker.model.tracer.UpdateTimeStamp;
 import org.apache.beam.sdk.coders.AvroCoder;
 import org.apache.beam.sdk.coders.DefaultCoder;
 
@@ -16,15 +17,18 @@ public class Repository {
     private String      owner;
     private String      name;
     private String      url;
-    private List<String> dockerPaths;
-    private Map<String, List<CommitHistory>> commitHistoryMap;
     private boolean     fork;
     private boolean     hasDockerCompose;
+    private List<String> dockerPaths;
+    private Map<String, List<CommitHistory>> commitHistoryMap;
+    private Map<String, Map<String, UpdateTimeStamp>> versionEvolutionMap;
 
     public Repository() {
         hasDockerCompose = false;
+        url = "";
         dockerPaths = new ArrayList<>();
         commitHistoryMap = new HashMap<>();
+        versionEvolutionMap = new HashMap<>();
     }
 
     public long getId() {
@@ -91,6 +95,14 @@ public class Repository {
         this.commitHistoryMap = commitHistoryMap;
     }
 
+    public Map<String, Map<String, UpdateTimeStamp>> getVersionEvolutionMap() {
+        return versionEvolutionMap;
+    }
+
+    public void setVersionEvolutionMap(Map<String, Map<String, UpdateTimeStamp>> versionEvolutionMap) {
+        this.versionEvolutionMap = versionEvolutionMap;
+    }
+
     public Repository clone() {
         Repository r = new Repository();
         r.setId(this.id);
@@ -101,6 +113,7 @@ public class Repository {
         r.setHasDockerCompose(this.hasDockerCompose);
         r.setDockerPaths(this.dockerPaths);
         r.setCommitHistoryMap(this.commitHistoryMap);
+        r.setVersionEvolutionMap(this.versionEvolutionMap);
         return r;
     }
 
@@ -111,10 +124,11 @@ public class Repository {
                 ", owner='" + owner + '\'' +
                 ", name='" + name + '\'' +
                 ", url='" + url + '\'' +
-                ", dockerPaths=" + dockerPaths +
-                ", commitHistoryMap=" + commitHistoryMap +
                 ", fork=" + fork +
                 ", hasDockerCompose=" + hasDockerCompose +
+                ", dockerPaths=" + dockerPaths +
+                ", commitHistoryMap=" + commitHistoryMap +
+                ", versionEvolutionMap=" + versionEvolutionMap +
                 '}';
     }
 }

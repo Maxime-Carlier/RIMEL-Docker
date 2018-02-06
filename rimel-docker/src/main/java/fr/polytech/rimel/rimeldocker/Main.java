@@ -2,7 +2,8 @@ package fr.polytech.rimel.rimeldocker;
 
 import fr.polytech.rimel.rimeldocker.api.APIException;
 import fr.polytech.rimel.rimeldocker.model.Repository;
-import fr.polytech.rimel.rimeldocker.transforms.ToJson;
+import fr.polytech.rimel.rimeldocker.transforms.CompareDCVersion;
+import fr.polytech.rimel.rimeldocker.transforms.ToString;
 import fr.polytech.rimel.rimeldocker.transforms.TraceDockerCompose;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.options.PipelineOptions;
@@ -37,10 +38,9 @@ public class Main {
 //
 //        pipeline.run().waitUntilFinish();
         Repository repository = new Repository();
-        repository.setOwner("scipio3000");
-        repository.setName("polytech-soa");
-        repository.setUrl("https://github.com/scipio3000/polytech-soa");
-        repository.setDockerPaths(new ArrayList<>(Arrays.asList("integration/docker-compose.yml")));
+        repository.setOwner("YvanGuidoin");
+        repository.setName("TestChat");
+        repository.setDockerPaths(new ArrayList<>(Arrays.asList("docker-compose.yml")));
         List<Repository> repositories = new ArrayList<>();
         repositories.add(repository);
         PipelineOptions pipelineOptions = PipelineOptionsFactory.create();
@@ -49,7 +49,9 @@ public class Main {
         pipeline
                 .apply(Create.of(repositories))
                 .apply(ParDo.of(new TraceDockerCompose()))
-                .apply(ParDo.of(new ToJson()));
+                .apply(ParDo.of(new CompareDCVersion()))
+//                .apply(ParDo.of(new ToJson()))
+                .apply(ParDo.of(new ToString()));
 
         pipeline.run().waitUntilFinish();
     }

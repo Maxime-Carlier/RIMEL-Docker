@@ -159,15 +159,20 @@ public class GithubAPI {
     private static final int SLEEP_DURATION = 60000;
 
     public String retrieveCommits(String owner, String repository, String filePath) throws IOException, InterruptedException {
-        return establishConnection(BASE_URL+owner+"/"+repository+"/commits?path="+filePath+"&"+PER_PAGE+"&"+GIT_CRED);
+        return establishConnection(BASE_URL + owner + "/"
+                + repository + "/commits?path=" + filePath
+                + "&" + PER_PAGE + "&" + GIT_CRED);
     }
 
     public String retrieveCommits(String owner, String repository, String filePath, String sha) throws IOException, InterruptedException {
-        return establishConnection(BASE_URL+owner+"/"+repository+"/commits?path="+filePath+"&"+PER_PAGE+"&"+SHA+sha+"&"+GIT_CRED);
+        return establishConnection(BASE_URL + owner + "/"
+                + repository + "/commits?path=" + filePath
+                + "&" + PER_PAGE + "&" + SHA
+                + sha + "&" + GIT_CRED);
     }
 
     public String retrieveCommit(String stringURL) throws IOException,InterruptedException {
-        return establishConnection(stringURL+"?"+GIT_CRED);
+        return establishConnection(stringURL + "?" + GIT_CRED);
     }
 
     public String retrieveFile(String stringURL) throws IOException, InterruptedException {
@@ -185,7 +190,7 @@ public class GithubAPI {
                 .addHeader("postman-token", "4d2b8b25-2b29-fed6-f125-434710ae15e1")
                 .build();
 
-
+        LOGGER.log(Level.INFO, "Sending out the following request : " + request.toString());
         com.squareup.okhttp.Response response = client.newCall(request).execute();
         if (response.code() != 200) {
             if (response.code() == 403) {

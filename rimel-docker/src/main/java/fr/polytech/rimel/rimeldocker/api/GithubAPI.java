@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 public class GithubAPI {
 
+    public static final     String OAuthToken = "";
     private static final    String API =               "https://api.github.com";
     private static final    String SEARCH_TOPIC =      API + "/search/repositories";
     private static final    String SEARCH_CODE =       API + "/search/code";

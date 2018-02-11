@@ -14,6 +14,8 @@ public class Repository {
     private String      url;
     private boolean     fork;
     private boolean     hasDockerCompose;
+    private int         nbOfContributors;
+    private int         nbOfCommits;
 
     public Repository() {
         hasDockerCompose = false;
@@ -59,6 +61,22 @@ public class Repository {
         this.hasDockerCompose = hasDockerCompose;
     }
 
+    public int getNbOfContributors() {
+        return nbOfContributors;
+    }
+
+    public void setNbOfContributors(int nbOfContributors) {
+        this.nbOfContributors = nbOfContributors;
+    }
+
+    public int getNbOfCommits() {
+        return nbOfCommits;
+    }
+
+    public void setNbOfCommits(int nbOfCommits) {
+        this.nbOfCommits = nbOfCommits;
+    }
+
     public Repository clone() {
         Repository r = new Repository();
         r.setId(this.id);
@@ -66,6 +84,8 @@ public class Repository {
         r.setUrl(this.url);
         r.setFork(this.fork);
         r.setHasDockerCompose(this.hasDockerCompose);
+        r.setNbOfContributors(this.nbOfContributors);
+        r.setNbOfCommits(this.nbOfCommits);
         return r;
     }
 

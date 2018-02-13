@@ -16,9 +16,11 @@ public class Repository {
     private boolean     hasDockerCompose;
     private int         nbOfContributors;
     private int         nbOfCommits;
+    private String      path;
 
     public Repository() {
         hasDockerCompose = false;
+        this.path =" ";
     }
 
     public long getId() {
@@ -77,6 +79,14 @@ public class Repository {
         this.nbOfCommits = nbOfCommits;
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     public Repository clone() {
         Repository r = new Repository();
         r.setId(this.id);
@@ -86,17 +96,22 @@ public class Repository {
         r.setHasDockerCompose(this.hasDockerCompose);
         r.setNbOfContributors(this.nbOfContributors);
         r.setNbOfCommits(this.nbOfCommits);
+        r.setPath(this.path);
+
         return r;
     }
 
     @Override
     public String toString() {
+
+
         return "Repository{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", url='" + url + '\'' +
                 ", fork=" + fork +
                 ", hasDockerCompose=" + hasDockerCompose +
+                ", DockerComposePath='" + this.path + '\'' +
                 '}';
     }
 }

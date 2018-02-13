@@ -5,6 +5,7 @@ import fr.polytech.rimel.rimeldocker.api.GithubAPI;
 import fr.polytech.rimel.rimeldocker.model.Repository;
 import fr.polytech.rimel.rimeldocker.transforms.HasDockerCompose;
 import fr.polytech.rimel.rimeldocker.transforms.ToString;
+import fr.polytech.rimel.rimeldocker.transforms.PathDockerCompose;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.AvroCoder;
 import org.apache.beam.sdk.coders.IterableCoder;
@@ -35,7 +36,8 @@ public class Main {
 
         pipeline
                 .apply(Create.of(repositories))
-                .apply(ParDo.of(new HasDockerCompose()))
+                //.apply(ParDo.of(new HasDockerCompose()))
+                .apply(ParDo.of(new PathDockerCompose()))
                 .apply(ParDo.of(new ToString()));
 
         pipeline.run().waitUntilFinish();

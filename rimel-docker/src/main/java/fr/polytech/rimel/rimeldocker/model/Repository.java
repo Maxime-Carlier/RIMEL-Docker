@@ -21,14 +21,14 @@ public class Repository {
     private boolean     hasDockerCompose;
     private int         nbOfContributors;
     private int         nbOfCommits;
-    private String      path;
     private List<String> dockerPaths;
     private Map<String, List<CommitHistory>> commitHistoryMap;
     private Map<String, Map<String, UpdateTimeStamp>> versionEvolutionMap;
 
     public Repository() {
         hasDockerCompose = false;
-        this.path =" ";
+        name = "";
+        owner = "";
         url = "";
         dockerPaths = new ArrayList<>();
         commitHistoryMap = new HashMap<>();
@@ -41,6 +41,14 @@ public class Repository {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     public String getName() {
@@ -91,22 +99,6 @@ public class Repository {
         this.nbOfCommits = nbOfCommits;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
     public List<String> getDockerPaths() {
         return dockerPaths;
     }
@@ -134,15 +126,13 @@ public class Repository {
     public Repository clone() {
         Repository r = new Repository();
         r.setId(this.id);
+        r.setOwner(this.owner);
         r.setName(this.name);
         r.setUrl(this.url);
         r.setFork(this.fork);
-        r.setOwner(this.owner);
         r.setHasDockerCompose(this.hasDockerCompose);
         r.setNbOfContributors(this.nbOfContributors);
         r.setNbOfCommits(this.nbOfCommits);
-        r.setPath(this.path);
-
         r.setDockerPaths(this.dockerPaths);
         r.setCommitHistoryMap(this.commitHistoryMap);
         r.setVersionEvolutionMap(this.versionEvolutionMap);
@@ -151,8 +141,6 @@ public class Repository {
 
     @Override
     public String toString() {
-
-
         return "Repository{" +
                 "id=" + id +
                 ", owner='" + owner + '\'' +
@@ -160,10 +148,11 @@ public class Repository {
                 ", url='" + url + '\'' +
                 ", fork=" + fork +
                 ", hasDockerCompose=" + hasDockerCompose +
+                ", nbOfContributors=" + nbOfContributors +
+                ", nbOfCommits=" + nbOfCommits +
                 ", dockerPaths=" + dockerPaths +
                 ", commitHistoryMap=" + commitHistoryMap +
                 ", versionEvolutionMap=" + versionEvolutionMap +
-                ", DockerComposePath='" + this.path + '\'' +
                 '}';
     }
 }

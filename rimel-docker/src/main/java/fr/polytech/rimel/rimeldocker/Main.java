@@ -3,6 +3,7 @@ package fr.polytech.rimel.rimeldocker;
 import fr.polytech.rimel.rimeldocker.api.APIException;
 import fr.polytech.rimel.rimeldocker.model.Repository;
 import fr.polytech.rimel.rimeldocker.transforms.CompareDCVersion;
+import fr.polytech.rimel.rimeldocker.transforms.HasDockerCompose;
 import fr.polytech.rimel.rimeldocker.transforms.ToString;
 import fr.polytech.rimel.rimeldocker.transforms.TraceDockerCompose;
 import org.apache.beam.sdk.Pipeline;
@@ -13,7 +14,6 @@ import org.apache.beam.sdk.transforms.ParDo;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Main {
@@ -40,7 +40,6 @@ public class Main {
         Repository repository = new Repository();
         repository.setOwner("YvanGuidoin");
         repository.setName("TestChat");
-        repository.setDockerPaths(new ArrayList<>(Arrays.asList("docker-compose.yml")));
         List<Repository> repositories = new ArrayList<>();
         repositories.add(repository);
         PipelineOptions pipelineOptions = PipelineOptionsFactory.create();
@@ -48,9 +47,13 @@ public class Main {
 
         pipeline
                 .apply(Create.of(repositories))
+                // Retrieve docker-compose.yml path
+                .apply(ParDo.of(new HasDockerCompose()))
+                // Trace each docker-compose.yml history (commits)
                 .apply(ParDo.of(new TraceDockerCompose()))
+                // Base on the file history, detect changes in the version
                 .apply(ParDo.of(new CompareDCVersion()))
-//                .apply(ParDo.of(new ToJson()))
+                // convert to String
                 .apply(ParDo.of(new ToString()));
 
         pipeline.run().waitUntilFinish();

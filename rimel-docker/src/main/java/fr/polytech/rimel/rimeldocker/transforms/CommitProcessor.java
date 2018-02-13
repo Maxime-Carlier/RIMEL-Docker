@@ -24,6 +24,6 @@ public class CommitProcessor extends DoFn<Repository, Repository> {
         int nbCommit = commits.size();
         Repository result = repository.clone();
         result.setNbOfCommits(nbCommit);
-        context.output(repository);
+        context.output(result);
     }
 }

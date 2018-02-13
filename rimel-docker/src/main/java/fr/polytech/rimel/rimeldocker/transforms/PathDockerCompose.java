@@ -1,58 +1,20 @@
 package fr.polytech.rimel.rimeldocker.transforms;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import fr.polytech.rimel.rimeldocker.api.APIException;
-import fr.polytech.rimel.rimeldocker.api.GithubAPI;
 import fr.polytech.rimel.rimeldocker.model.Repository;
 import org.apache.beam.sdk.transforms.DoFn;
-
-import java.io.IOException;
-
-import java.util.concurrent.TimeoutException;
-import java.io.*;
-import java.io.File;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import java.io.IOException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import java.io.FileNotFoundException;
-import java.text.ParseException;
-import com.google.gson.Gson;
-import org.json.simple.*;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
-
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
 /**
  * For a given String input, search the dockercompose and retrun the path
@@ -119,7 +81,7 @@ public final class PathDockerCompose extends DoFn<Repository, Repository> {
 
         Repository result = repository.clone();
         if(p != null) {
-            result.setPath(p);
+//            result.setPath(p);
             result.setHasDockerCompose(true);
         }
         //System.out.println(result.toString());

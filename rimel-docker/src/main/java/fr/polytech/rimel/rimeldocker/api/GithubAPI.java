@@ -15,6 +15,7 @@ import org.kohsuke.github.PagedSearchIterable;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,7 +35,7 @@ public class GithubAPI {
 
     private static          String AUTHORIZATION =      "Authorization";
     private static          String TOKEN =              "Bearer 60f5d5e864a0ec5684120a896b377f14a1ddd2bb";
-    private static          String RAW_TOKEN =          "60f5d5e864a0ec5684120a896b377f14a1ddd2bb";
+    private static          String RAW_TOKEN =          "10f2c7b194656ca08b024363106d2b7cda88695d";
     private static          String USER_AGENT =         "User-agent";
     private static          String AGENT =              "AjroudRami";
 
@@ -139,10 +140,9 @@ public class GithubAPI {
         List<String> dockerPaths = new ArrayList<>();
         PagedSearchIterable<GHContent> contents = gitHub.searchContent().filename("docker-compose.yml").repo(repoName).user(owner).list();
         contents.forEach(ghContent -> {
-            System.out.println(ghContent.getPath());
-            dockerPaths.add(ghContent.getGitUrl());
+            dockerPaths.add(ghContent.getPath());
         });
-        return dockerPaths;
+        return new ArrayList<>(new HashSet<>(dockerPaths));
     }
 
     private void updateSearchLimits(String remaining, String reset) {

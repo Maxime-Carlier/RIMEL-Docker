@@ -9,6 +9,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
+import org.kohsuke.github.GHContent;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.PagedSearchIterable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +33,8 @@ public class GithubAPI {
     private static final    String CREATED_AT =        "created_at";
 
     private static          String AUTHORIZATION =      "Authorization";
-    private static          String TOKEN =              "Bearer 1a3ea623f809bef78d84c747fa757849a19e499a";
+    private static          String TOKEN =              "Bearer 60f5d5e864a0ec5684120a896b377f14a1ddd2bb";
+    private static          String RAW_TOKEN =          "60f5d5e864a0ec5684120a896b377f14a1ddd2bb";
     private static          String USER_AGENT =         "User-agent";
     private static          String AGENT =              "AjroudRami";
 
@@ -128,6 +132,17 @@ public class GithubAPI {
         JsonObject jsonObject = parser.parse(json).getAsJsonObject();
         int nbDockerCompose = jsonObject.get("total_count").getAsInt();
         return nbDockerCompose != 0;
+    }
+
+    public List<String> retrieveFilePath(String repoName, String owner) throws IOException {
+        GitHub gitHub = GitHub.connectUsingOAuth(RAW_TOKEN);
+        List<String> dockerPaths = new ArrayList<>();
+        PagedSearchIterable<GHContent> contents = gitHub.searchContent().filename("docker-compose.yml").repo(repoName).user(owner).list();
+        contents.forEach(ghContent -> {
+            System.out.println(ghContent.getPath());
+            dockerPaths.add(ghContent.getGitUrl());
+        });
+        return dockerPaths;
     }
 
     private void updateSearchLimits(String remaining, String reset) {

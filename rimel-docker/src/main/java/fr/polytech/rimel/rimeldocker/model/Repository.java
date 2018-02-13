@@ -1,15 +1,20 @@
 package fr.polytech.rimel.rimeldocker.model;
 
-import org.apache.avro.reflect.Nullable;
+import fr.polytech.rimel.rimeldocker.model.tracer.UpdateTimeStamp;
 import org.apache.beam.sdk.coders.AvroCoder;
 import org.apache.beam.sdk.coders.DefaultCoder;
-import org.joda.time.DateTime;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @DefaultCoder(AvroCoder.class)
 public class Repository {
 
     private long        id;
+    private String      owner;
     private String      name;
     private String      url;
     private boolean     fork;
@@ -17,10 +22,17 @@ public class Repository {
     private int         nbOfContributors;
     private int         nbOfCommits;
     private String      path;
+    private List<String> dockerPaths;
+    private Map<String, List<CommitHistory>> commitHistoryMap;
+    private Map<String, Map<String, UpdateTimeStamp>> versionEvolutionMap;
 
     public Repository() {
         hasDockerCompose = false;
         this.path =" ";
+        url = "";
+        dockerPaths = new ArrayList<>();
+        commitHistoryMap = new HashMap<>();
+        versionEvolutionMap = new HashMap<>();
     }
 
     public long getId() {
@@ -87,17 +99,53 @@ public class Repository {
         this.path = path;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public List<String> getDockerPaths() {
+        return dockerPaths;
+    }
+
+    public void setDockerPaths(List<String> dockerPaths) {
+        this.dockerPaths = dockerPaths;
+    }
+
+    public Map<String, List<CommitHistory>> getCommitHistoryMap() {
+        return commitHistoryMap;
+    }
+
+    public void setCommitHistoryMap(Map<String, List<CommitHistory>> commitHistoryMap) {
+        this.commitHistoryMap = commitHistoryMap;
+    }
+
+    public Map<String, Map<String, UpdateTimeStamp>> getVersionEvolutionMap() {
+        return versionEvolutionMap;
+    }
+
+    public void setVersionEvolutionMap(Map<String, Map<String, UpdateTimeStamp>> versionEvolutionMap) {
+        this.versionEvolutionMap = versionEvolutionMap;
+    }
+
     public Repository clone() {
         Repository r = new Repository();
         r.setId(this.id);
         r.setName(this.name);
         r.setUrl(this.url);
         r.setFork(this.fork);
+        r.setOwner(this.owner);
         r.setHasDockerCompose(this.hasDockerCompose);
         r.setNbOfContributors(this.nbOfContributors);
         r.setNbOfCommits(this.nbOfCommits);
         r.setPath(this.path);
 
+        r.setDockerPaths(this.dockerPaths);
+        r.setCommitHistoryMap(this.commitHistoryMap);
+        r.setVersionEvolutionMap(this.versionEvolutionMap);
         return r;
     }
 
@@ -107,10 +155,14 @@ public class Repository {
 
         return "Repository{" +
                 "id=" + id +
+                ", owner='" + owner + '\'' +
                 ", name='" + name + '\'' +
                 ", url='" + url + '\'' +
                 ", fork=" + fork +
                 ", hasDockerCompose=" + hasDockerCompose +
+                ", dockerPaths=" + dockerPaths +
+                ", commitHistoryMap=" + commitHistoryMap +
+                ", versionEvolutionMap=" + versionEvolutionMap +
                 ", DockerComposePath='" + this.path + '\'' +
                 '}';
     }

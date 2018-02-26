@@ -32,8 +32,6 @@ public class Main {
         }
 
 
-
-
         // Step 1 : Get all the repositories
         PagedSearchIterable<GHRepository> ghRepositories = GithubClientFactory.getOne().searchRepositories().q("topic:docker").q("is:public").list();
 
@@ -43,7 +41,7 @@ public class Main {
             repository.setGhRepository(ghRepository);
             repositories.add(repository);
             // Pour debuguer qu'une petite partie des résultats plutôt que tout
-            if (repositories.size() > 10) {
+            if (repositories.size() > 7) {
                 break;
             }
         }

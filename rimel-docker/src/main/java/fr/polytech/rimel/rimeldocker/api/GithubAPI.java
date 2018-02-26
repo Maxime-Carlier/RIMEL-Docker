@@ -28,7 +28,7 @@ public class GithubAPI {
 
     public static List<GHCommit> getCommitsForFile(GHRepository ghRepository, String dockerFilepath){
         List<GHCommit> commitHistories = new ArrayList<>();
-        PagedIterable<GHCommit> commits = ghRepository.queryCommits().path(dockerFilepath).list();
+        PagedIterable<GHCommit> commits = ghRepository.queryCommits().path(dockerFilepath).since(0).list();
         for (GHCommit commit : commits) {
             commitHistories.add(commit);
         }

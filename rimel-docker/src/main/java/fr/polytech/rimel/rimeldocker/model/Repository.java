@@ -1,5 +1,6 @@
 package fr.polytech.rimel.rimeldocker.model;
 
+import fr.polytech.rimel.rimeldocker.model.tracer.DockerCompose;
 import fr.polytech.rimel.rimeldocker.model.tracer.UpdateTimeStamp;
 import org.kohsuke.github.GHRepository;
 
@@ -16,15 +17,14 @@ public class Repository {
     private int nbOfContributors;
     private int nbOfCommits;
     private List<String> dockerPaths;
-    private Map<String, List<CommitHistory>> commitHistoryMap;
-    private Map<String, Map<String, UpdateTimeStamp>> versionEvolutionMap;
-
+    private Map<String, Map<String,UpdateTimeStamp>>  versionEvolutionMap;
+    private Map<String, List<DockerCompose>> dockerComposes;
     public Repository() {
         ghRepository =null;
         hasDockerCompose = false;
         dockerPaths = new ArrayList<>();
-        commitHistoryMap = new HashMap<>();
         versionEvolutionMap = new HashMap<>();
+        dockerComposes = new HashMap<>();
     }
 
     public GHRepository getGhRepository() {
@@ -67,20 +67,20 @@ public class Repository {
         this.dockerPaths = dockerPaths;
     }
 
-    public Map<String, List<CommitHistory>> getCommitHistoryMap() {
-        return commitHistoryMap;
-    }
-
-    public void setCommitHistoryMap(Map<String, List<CommitHistory>> commitHistoryMap) {
-        this.commitHistoryMap = commitHistoryMap;
-    }
-
-    public Map<String, Map<String, UpdateTimeStamp>> getVersionEvolutionMap() {
+    public Map<String, Map<String,UpdateTimeStamp>>  getVersionEvolutionMap() {
         return versionEvolutionMap;
     }
 
-    public void setVersionEvolutionMap(Map<String, Map<String, UpdateTimeStamp>> versionEvolutionMap) {
+    public void setVersionEvolutionMap(Map<String, Map<String,UpdateTimeStamp>>  versionEvolutionMap) {
         this.versionEvolutionMap = versionEvolutionMap;
+    }
+
+    public Map<String, List<DockerCompose>> getDockerComposes() {
+        return dockerComposes;
+    }
+
+    public void setDockerComposes(Map<String, List<DockerCompose>> dockerComposes) {
+        this.dockerComposes = dockerComposes;
     }
 
     public Repository clone() {
@@ -88,8 +88,21 @@ public class Repository {
         r.setGhRepository(this.ghRepository);
         r.setHasDockerCompose(this.hasDockerCompose);
         r.setDockerPaths(this.dockerPaths);
-        r.setCommitHistoryMap(this.commitHistoryMap);
         r.setVersionEvolutionMap(this.versionEvolutionMap);
+        r.setDockerComposes(this.dockerComposes);
         return r;
+    }
+
+    @Override
+    public String toString() {
+        return "Repository{" +
+                "ghRepository=" + ghRepository +
+                ", hasDockerCompose=" + hasDockerCompose +
+                ", nbOfContributors=" + nbOfContributors +
+                ", nbOfCommits=" + nbOfCommits +
+                ", dockerPaths=" + dockerPaths +
+                ", dockerComposes=" + dockerComposes +
+                ", versionEvolutionMap=" + versionEvolutionMap +
+                '}';
     }
 }

@@ -75,7 +75,7 @@ public final class PathDockerCompose extends DoFn<Repository, Repository> {
 
     @ProcessElement
     public void processElement(ProcessContext context) throws APIException, IOException {
-        Repository repository = context.element();
+        /*Repository repository = context.element();
         //ArrayList<String> PathListDockerCompose = alldockercompose(repository.getName());
         String p = alldockercompose(repository.getName());
 
@@ -86,6 +86,6 @@ public final class PathDockerCompose extends DoFn<Repository, Repository> {
         }
         //System.out.println(result.toString());
 
-        context.output(repository);
+        context.output(repository);*/
     }
 }

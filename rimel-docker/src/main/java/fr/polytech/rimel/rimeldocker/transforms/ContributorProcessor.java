@@ -9,14 +9,13 @@ import org.kohsuke.github.GitHub;
 import java.io.IOException;
 import java.util.List;
 
-import static fr.polytech.rimel.rimeldocker.api.GithubAPI.OAuthToken;
 
 public class ContributorProcessor extends DoFn<Repository, Repository> {
 
     @ProcessElement
     public void processElement(ProcessContext context) throws APIException, IOException {
 
-        Repository repository = context.element();
+        /*Repository repository = context.element();
         GitHub github = GitHub.connectUsingOAuth(OAuthToken);
         GHRepository githubRepo = github.getRepository(repository.getName());
 
@@ -24,6 +23,6 @@ public class ContributorProcessor extends DoFn<Repository, Repository> {
         int nbUsers = users.size();
         Repository result = repository.clone();
         result.setNbOfContributors(nbUsers);
-        context.output(repository);
+        context.output(repository);*/
     }
 }

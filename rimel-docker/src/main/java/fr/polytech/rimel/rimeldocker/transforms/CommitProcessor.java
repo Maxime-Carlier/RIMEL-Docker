@@ -10,13 +10,12 @@ import org.kohsuke.github.GitHub;
 import java.io.IOException;
 import java.util.List;
 
-import static fr.polytech.rimel.rimeldocker.api.GithubAPI.OAuthToken;
 
 public class CommitProcessor extends DoFn<Repository, Repository> {
     @ProcessElement
     public void processElement(ProcessContext context) throws APIException, IOException {
 
-        Repository repository = context.element();
+        /*Repository repository = context.element();
         GitHub github = GitHub.connectUsingOAuth(OAuthToken);
         GHRepository githubRepo = github.getRepository(repository.getName());
 
@@ -24,6 +23,6 @@ public class CommitProcessor extends DoFn<Repository, Repository> {
         int nbCommit = commits.size();
         Repository result = repository.clone();
         result.setNbOfCommits(nbCommit);
-        context.output(result);
+        context.output(result);*/
     }
 }

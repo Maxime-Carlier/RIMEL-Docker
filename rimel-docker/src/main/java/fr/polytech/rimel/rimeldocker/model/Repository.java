@@ -1,23 +1,20 @@
 package fr.polytech.rimel.rimeldocker.model;
 
 import fr.polytech.rimel.rimeldocker.model.tracer.UpdateTimeStamp;
-import org.apache.beam.sdk.coders.AvroCoder;
-import org.apache.beam.sdk.coders.DefaultCoder;
-import org.apache.beam.sdk.coders.SerializableCoder;
 import org.kohsuke.github.GHRepository;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
-@DefaultCoder(SerializableCoder.class)
-public class Repository implements Serializable {
+public class Repository {
 
     private GHRepository ghRepository;
     private boolean hasDockerCompose;
+    private int nbOfContributors;
+    private int nbOfCommits;
     private List<String> dockerPaths;
     private Map<String, List<CommitHistory>> commitHistoryMap;
     private Map<String, Map<String, UpdateTimeStamp>> versionEvolutionMap;
@@ -44,6 +41,22 @@ public class Repository implements Serializable {
 
     public void setHasDockerCompose(boolean hasDockerCompose) {
         this.hasDockerCompose = hasDockerCompose;
+    }
+
+    public int getNbOfContributors() {
+        return nbOfContributors;
+    }
+
+    public void setNbOfContributors(int nbOfContributors) {
+        nbOfContributors = nbOfContributors;
+    }
+
+    public int getNbOfCommits() {
+        return nbOfCommits;
+    }
+
+    public void setNbOfCommits(int nbOfCommits) {
+        this.nbOfCommits = nbOfCommits;
     }
 
     public List<String> getDockerPaths() {

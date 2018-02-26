@@ -35,7 +35,7 @@ public class GithubAPI {
         return result.getTotalCount() != 0;
     }
 
-    public static List<String> retrieveFilePath(String repoName, String owner) throws IOException {
+    public static List<String> retrieveFilePath(String repoName, String owner) throws GHException {
         List<String> dockerPaths = new ArrayList<>();
         PagedSearchIterable<GHContent> contents = GithubClientFactory.getOne().searchContent().filename("docker-compose.yml").repo(repoName).user(owner).list();
         contents.forEach(ghContent -> {

@@ -2,15 +2,12 @@ package fr.polytech.rimel.rimeldocker.model.tracer;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.beam.sdk.coders.AvroCoder;
-import org.apache.beam.sdk.coders.DefaultCoder;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-@DefaultCoder(AvroCoder.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Committer {
     @JsonProperty("name")

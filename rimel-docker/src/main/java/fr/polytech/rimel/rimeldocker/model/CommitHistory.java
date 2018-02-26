@@ -7,13 +7,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.polytech.rimel.rimeldocker.model.tracer.Commit;
 import fr.polytech.rimel.rimeldocker.model.tracer.DockerCompose;
 import fr.polytech.rimel.rimeldocker.model.tracer.Parent;
-import org.apache.beam.sdk.coders.AvroCoder;
-import org.apache.beam.sdk.coders.DefaultCoder;
 
 import java.util.List;
 
 
-@DefaultCoder(AvroCoder.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CommitHistory {

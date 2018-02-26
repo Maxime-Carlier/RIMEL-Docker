@@ -1,9 +1,6 @@
 package fr.polytech.rimel.rimeldocker.model.tracer;
 
-import org.apache.beam.sdk.coders.AvroCoder;
-import org.apache.beam.sdk.coders.DefaultCoder;
 
-@DefaultCoder(AvroCoder.class)
 public class UpdateTimeStamp {
 
     private String dateUpdated;

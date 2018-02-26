@@ -4,9 +4,6 @@ import fr.polytech.rimel.rimeldocker.api.APIException;
 import fr.polytech.rimel.rimeldocker.model.CommitHistory;
 import fr.polytech.rimel.rimeldocker.model.Repository;
 import fr.polytech.rimel.rimeldocker.model.tracer.UpdateTimeStamp;
-import org.apache.beam.sdk.coders.AvroCoder;
-import org.apache.beam.sdk.coders.DefaultCoder;
-import org.apache.beam.sdk.transforms.DoFn;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -15,8 +12,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-@DefaultCoder(AvroCoder.class)
-public class CompareDCVersion extends DoFn<Repository, Repository> {
+public class CompareDCVersion {
 
     private Map<String, Date> dcRelease;
 
@@ -38,11 +34,9 @@ public class CompareDCVersion extends DoFn<Repository, Repository> {
         dcRelease.put("3.5", new GregorianCalendar(2017, Calendar.DECEMBER, 18).getTime());
     }
 
-    @ProcessElement
-    public void processElement(ProcessContext context) throws APIException, IOException {
-        Repository repository = context.element().clone();
+    public Repository processElement(Repository repository) throws APIException, IOException {
         repository.setVersionEvolutionMap(sortDockerVersionToEarliestDate(repository));
-        context.output(repository);
+        return repository;
     }
 
     private Map<String, Map<String, UpdateTimeStamp>> sortDockerVersionToEarliestDate(Repository repository){

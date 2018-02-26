@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import fr.polytech.rimel.rimeldocker.api.APIException;
 import fr.polytech.rimel.rimeldocker.model.Repository;
-import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 /**
  * For a given String input, search the dockercompose and retrun the path
  */
-public final class PathDockerCompose extends DoFn<Repository, Repository> {
+public final class PathDockerCompose {
 
 
 
@@ -73,11 +72,9 @@ public final class PathDockerCompose extends DoFn<Repository, Repository> {
     }
 
 
-    @ProcessElement
-    public void processElement(ProcessContext context) throws APIException, IOException {
-        /*Repository repository = context.element();
+    public static Repository processElement(Repository repository) throws APIException, IOException {
         //ArrayList<String> PathListDockerCompose = alldockercompose(repository.getName());
-        String p = alldockercompose(repository.getName());
+        String p = alldockercompose(repository.getGhRepository().getName());
 
         Repository result = repository.clone();
         if(p != null) {
@@ -86,6 +83,6 @@ public final class PathDockerCompose extends DoFn<Repository, Repository> {
         }
         //System.out.println(result.toString());
 
-        context.output(repository);*/
+        return result;
     }
 }

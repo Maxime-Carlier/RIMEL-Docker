@@ -26,7 +26,7 @@ public class TraceDockerCompose {
 
     private static Logger LOGGER = Logger.getLogger(TraceDockerCompose.class.getName());
 
-    public static Repository processElement(Repository repository) throws APIException, IOException {
+    public static Repository processElement(Repository repository) {
         Map<String , List<CommitHistory>> commitMap = new HashMap<>();
         for (String path : repository.getDockerPaths()) {
             LOGGER.log(Level.INFO, "Processing commit history from file " + path + " at " + repository.getGhRepository().getName());

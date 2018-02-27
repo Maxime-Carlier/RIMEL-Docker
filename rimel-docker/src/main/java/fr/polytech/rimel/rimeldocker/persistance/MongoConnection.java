@@ -11,6 +11,7 @@ import org.bson.BsonDocument;
 import org.bson.BsonDouble;
 import org.bson.Document;
 
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,14 +38,14 @@ public class MongoConnection {
      * @return
      */
     public void insert(Repository repository) {
-        insertInCollection(repository, REPOSITORIES);
+        insertInCollection(repository);
     }
 
 
-    public void insertInCollection(Object object, String collectionName) {
-        MongoCollection<Document> collection = mongoClient.getDatabase(DATABASE).getCollection(collectionName);
+    public void insertInCollection(Repository repository) {
+        MongoCollection<Document> collection = mongoClient.getDatabase(DATABASE).getCollection(REPOSITORIES);
         Gson gson = new Gson();
-        String json = gson.toJson(object);
+        String json = toJson(repository);
         LOGGER.log(Level.INFO, "Attempting insertion of json: " + json);
         try {
             collection.insertOne(Document.parse(json));
@@ -59,10 +60,9 @@ public class MongoConnection {
         return collection.find().iterator();
     }
 
-    public void replaceOne(Object object, String collectionName) {
-        MongoCollection<Document> collection = mongoClient.getDatabase(DATABASE).getCollection(collectionName);
-        Gson gson = new Gson();
-        String json = gson.toJson(object);
+    public void replaceOne(Repository repository) {
+        MongoCollection<Document> collection = mongoClient.getDatabase(DATABASE).getCollection(REPOSITORIES);
+        String json = toJson(repository);
         JsonParser parser = new JsonParser();
         double id = parser.parse(json).getAsJsonObject().get("_id").getAsDouble();
         LOGGER.log(Level.INFO, "Attempting insertion of json: " + json);
@@ -74,5 +74,20 @@ public class MongoConnection {
             LOGGER.log(Level.WARNING, e.getMessage());
         }
         LOGGER.log(Level.INFO, "Replace succes");
+    }
+
+
+    private String toJson(Repository repository) {
+        Gson gson = new Gson();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("name", repository.getGhRepository().getFullName());
+        map.put("hasDockerCompose", repository.hasDockerCompose());
+        map.put("nbOfContributors", repository.getNbOfContributors());
+        map.put("nbOfCommits", repository.getNbOfCommits());
+        map.put("dockerPaths", repository.getDockerPaths().toArray());
+        map.put("versionEvolutionMap", repository.getVersionEvolutionMap());
+        map.put("dockerComposes", repository.getDockerComposes());
+
+        return gson.toJson(map);
     }
 }

@@ -39,46 +39,47 @@ public class Main {
         // Step 1 : Get all the repositories
         PagedSearchIterable<GHRepository> ghRepositories = GithubClientFactory.getOne().searchRepositories().q("topic:docker").q("is:public").list();
 
-        List<Repository> repositories = new ArrayList<>();
+        List<Repository> inputRepositories = new ArrayList<>();
         for (GHRepository ghRepository : ghRepositories) {
             Repository repository = new Repository();
             repository.setGhRepository(ghRepository);
-            repositories.add(repository);
+            inputRepositories.add(repository);
             // Pour debuguer qu'une petite partie des résultats plutôt que tout
-            if (repositories.size() > 7) {
+            if (inputRepositories.size() > 4) {
                 break;
             }
         }
-        LOGGER.info("Got "+repositories.size()+" repositories in the sample");
+        LOGGER.info("Got "+inputRepositories.size()+" repositories in the sample");
 
-        // Step 2 : Retrieve the number of contributor in the project
-        List<Repository> repositories2 = new ArrayList<>();
-        for (Repository r : repositories) {
-            Repository result = ContributorProcessor.processElement(r);
-            repositories2.add(result);
-        }
+        List<Repository> outputRepositories = new ArrayList<>();
+        for(int i=0; i<inputRepositories.size();i++) {
+            try {
+                LOGGER.info("Now processing repository #" + i + " " + inputRepositories.get(i).getGhRepository().getFullName());
+                Repository repository = inputRepositories.get(i);
+                // Step 2 : Retrieve the number of contributor in the project
+                repository = ContributorProcessor.processElement(repository);
 
-        // Step 3 : Retrieve the path of the Docker compose file
-        List<Repository> repositories3 = new ArrayList<>();
-        for (Repository r : repositories2) {
-            Repository result = HasDockerCompose.processElement(r);
-            if (result != null) {
-                repositories3.add(result);
+                // Step 3 : Retrieve the path of all the Docker compose files
+                repository = HasDockerCompose.processElement(repository);
+                if (repository == null) {
+                    continue;
+                }
+
+                // Step 4 : Retrieve the docker compose change
+                repository = TraceDockerCompose.processElement(repository);
+
+                // Step 5 : Compare the Docker Compose versions
+                repository = new CompareDCVersion().processElement(repository);
+
+                // Step 6 : Final Check before adding the repository to the output
+                if (repository != null) {
+                    outputRepositories.add(repository);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                continue;
             }
         }
-
-        // Step 4 : Retrieve the docker compose change
-        List<Repository> repositories4 = new ArrayList<>();
-        for (Repository r : repositories3) {
-            Repository result = TraceDockerCompose.processElement(r);
-            repositories4.add(result);
-        }
-
-        // Step 5 : Compare the Docker Compose versions
-        List<Repository> repositories5 = new ArrayList<>();
-        for (Repository r : repositories4) {
-            Repository result = new CompareDCVersion().processElement(r);
-            repositories5.add(result);
-        }
+        System.out.println("END");
     }
 }

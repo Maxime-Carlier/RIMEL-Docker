@@ -1,5 +1,6 @@
 package fr.polytech.rimel.rimeldocker;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import fr.polytech.rimel.rimeldocker.api.APIException;
@@ -15,8 +16,7 @@ import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.PagedSearchIterable;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -53,8 +53,9 @@ public class Main {
         }
         LOGGER.info("Got "+inputRepositories.size()+" repositories in the sample");
         /**Persistance**/
-        MongoConnection mongoConnection = new MongoConnection();
-
+        Gson gson = new Gson();
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("data.json")));
+        writer.write("[");
         List<Repository> outputRepositories = new ArrayList<>();
         for(int i=0; i<inputRepositories.size();i++) {
             try {
@@ -80,13 +81,16 @@ public class Main {
                     outputRepositories.add(repository);
                     /**Persistance**/
                     MongoRepository mongoRepository = MongoRepository.fromRepository(repository);
-                    mongoConnection.insert(mongoRepository);
+                    String json = gson.toJson(mongoRepository);
+                    writer.write(json+",");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 continue;
             }
         }
+        writer.write("]");
+        writer.close();
         System.out.println("END");
     }
 }

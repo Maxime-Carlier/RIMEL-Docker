@@ -33,3 +33,7 @@ List<Repository> inputRepositories = new ArrayList<>();
             }*/
         }
 ```
+
+### Raw result
+
+A JSON file containing the raw result of run is available in the `rawResutls/` folder

@@ -48,7 +48,7 @@ public class Main {
             repository.setGhRepository(ghRepository);
             inputRepositories.add(repository);
             // Pour debuguer qu'une petite partie des résultats plutôt que tout
-            /*if (inputRepositories.size() > 99) {
+            /*if (inputRepositories.size() > 9) {
                 break;
             }*/
         }

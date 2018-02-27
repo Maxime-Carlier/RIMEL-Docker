@@ -23,10 +23,9 @@ public final class HasDockerCompose {
             List<String> dockerPaths = GithubAPI.retrieveFilePath(repository.getGhRepository().getName(), repository.getGhRepository().getOwner().getName());
             if (!dockerPaths.isEmpty()) {
                 LOGGER.info("Found " + dockerPaths.size() +" docker compose file in repository " + repository.getGhRepository().getName());
-                Repository result = repository.clone();
-                result.setHasDockerCompose(true);
-                result.setDockerPaths(dockerPaths);
-                return result;
+                repository.setHasDockerCompose(true);
+                repository.setDockerPaths(dockerPaths);
+                return repository;
             } else {
                 return null;
             }

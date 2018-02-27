@@ -7,15 +7,13 @@ import org.kohsuke.github.GHUser;
 import org.kohsuke.github.GitHub;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 
 public class ContributorProcessor {
 
-    public static Repository processElement(Repository repository) throws APIException, IOException {
-
-        GHRepository githubRepo = repository.getGhRepository();
-        List<GHUser> users = githubRepo.listCollaborators().asList();
-        int nbUsers = users.size();
+    public static Repository processElement(Repository repository) throws IOException {
+        int nbUsers = repository.getGhRepository().listContributors().asSet().size();
         Repository result = repository.clone();
         result.setNbOfContributors(nbUsers);
         return result;

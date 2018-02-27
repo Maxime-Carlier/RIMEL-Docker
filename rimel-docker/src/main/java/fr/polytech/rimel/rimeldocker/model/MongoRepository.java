@@ -18,6 +18,7 @@ public class MongoRepository {
     private int numberOfLOC;
     private int ageInDays;
     private Map<String, Map<String,UpdateTimeStamp>> changeDelaysByVersionByDockerFile;
+    private Date lastCommitDate;
 
     public MongoRepository() {
         pathToAllDockerCompose = new ArrayList<>();
@@ -35,6 +36,7 @@ public class MongoRepository {
             DateTime creationDateTime = new DateTime(mongoRepository.getRepoCreationDate());
             int nbOfDays = Days.daysBetween(creationDateTime, now).getDays();
             mongoRepository.setAgeInDays(nbOfDays);
+            mongoRepository.setLastCommitDate(repository.getGhRepository().getPushedAt());
         } catch (IOException ioe) {
             mongoRepository.setRepoCreationDate(null);
         }
@@ -118,6 +120,14 @@ public class MongoRepository {
 
     public void setAgeInDays(int ageInDays) {
         this.ageInDays = ageInDays;
+    }
+
+    public Date getLastCommitDate() {
+        return lastCommitDate;
+    }
+
+    public void setLastCommitDate(Date lastCommitDate) {
+        this.lastCommitDate = lastCommitDate;
     }
 
     public Map<String, Map<String, UpdateTimeStamp>> getChangeDelaysByVersionByDockerFile() {

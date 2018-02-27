@@ -10,6 +10,7 @@ import fr.polytech.rimel.rimeldocker.model.Repository;
 import fr.polytech.rimel.rimeldocker.persistance.MongoConnection;
 import fr.polytech.rimel.rimeldocker.transforms.*;
 import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GHRepositorySearchBuilder;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.PagedSearchIterable;
 
@@ -39,7 +40,7 @@ public class Main {
 
 
         // Step 1 : Get all the repositories
-        PagedSearchIterable<GHRepository> ghRepositories = GithubClientFactory.getOne().searchRepositories().q("topic:docker").q("is:public").list();
+        PagedSearchIterable<GHRepository> ghRepositories = GithubClientFactory.getOne().searchRepositories().q("topic:docker").q("is:public").sort(GHRepositorySearchBuilder.Sort.STARS).list();
 
         List<Repository> inputRepositories = new ArrayList<>();
         for (GHRepository ghRepository : ghRepositories) {
@@ -47,9 +48,9 @@ public class Main {
             repository.setGhRepository(ghRepository);
             inputRepositories.add(repository);
             // Pour debuguer qu'une petite partie des résultats plutôt que tout
-            if (inputRepositories.size() > 4) {
+            /*if (inputRepositories.size() > 9) {
                 break;
-            }
+            }*/
         }
         LOGGER.info("Got "+inputRepositories.size()+" repositories in the sample");
         /**Persistance**/
@@ -67,19 +68,19 @@ public class Main {
                 // Step 3 : Retrieve the number of commits made
                 //repository = CommitProcessor.processElement(repository);
 
-                // Step 3 : Retrieve the path of all the Docker compose files
+                // Step 4 : Retrieve the path of all the Docker compose files
                 repository = HasDockerCompose.processElement(repository);
                 if (repository == null) {
                     return;
                 }
 
-                // Step 4 : Retrieve the docker compose change
+                // Step 5 : Retrieve the docker compose change
                 repository = TraceDockerCompose.processElement(repository);
 
-                // Step 5 : Compare the Docker Compose versions
+                // Step 6 : Compare the Docker Compose versions
                 repository = new CompareDCVersion().processElement(repository);
 
-                // Step 6 : Final Check before adding the repository to the output
+                // Step 7 : Final Check before adding the repository to the output
                 if (repository != null) {
                     outputRepositories.add(repository);
                     /**Persistance**/

@@ -19,6 +19,8 @@ public class Repository {
     private List<String> dockerPaths;
     private Map<String, Map<String,UpdateTimeStamp>>  versionEvolutionMap;
     private Map<String, List<DockerCompose>> dockerComposes;
+
+
     public Repository() {
         ghRepository =null;
         hasDockerCompose = false;

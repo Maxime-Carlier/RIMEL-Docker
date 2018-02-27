@@ -16,8 +16,8 @@ public class GithubClientFactory {
             for (GitHub gh : gitHubs) {
                 try {
                     GHRateLimit limit = gh.rateLimit();
-                    if (limit.remaining > 0) {
-                        return gh;
+                    if (result == null || (limit.remaining > 0 && limit.remaining>result.getRateLimit().remaining)) {
+                        result = gh;
                     }
                     Date d = limit.getResetDate();
                     if (result == null || d.before(result.getRateLimit().getResetDate())) {

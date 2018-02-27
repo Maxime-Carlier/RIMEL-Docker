@@ -1,5 +1,11 @@
 package fr.polytech.rimel.rimeldocker.persistance;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.google.gson.FieldNamingStrategy;
+import com.google.gson.GsonBuilder;
+import fr.polytech.rimel.rimeldocker.model.MongoRepository;
 import fr.polytech.rimel.rimeldocker.model.Repository;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
@@ -11,14 +17,15 @@ import org.bson.BsonDocument;
 import org.bson.BsonDouble;
 import org.bson.Document;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MongoConnection {
 
-    public static final String REPOSITORIES = "repositories";
-    private static final String HOST = "novagen.fr";
+    public static final String MONGO_REPOSITORIES = "mongo-repositories";
+    private static final String HOST = "localhost";
     private static final int PORT = 27017;
     private static final String DATABASE = "rimel_final";
     private Logger LOGGER = Logger.getLogger(MongoConnection.class.getName());
@@ -31,21 +38,15 @@ public class MongoConnection {
     }
 
 
-    /**
-     * Insert a repository in the rimel.randomRepositories collection
-     *
-     * @param repository
-     * @return
-     */
-    public void insert(Repository repository) {
-        insertInCollection(repository);
+    public void insert(MongoRepository mongoRepository) throws JsonProcessingException {
+        insertInCollection(mongoRepository);
     }
 
 
-    public void insertInCollection(Repository repository) {
-        MongoCollection<Document> collection = mongoClient.getDatabase(DATABASE).getCollection(REPOSITORIES);
-        Gson gson = new Gson();
-        String json = toJson(repository);
+    public void insertInCollection(MongoRepository mongoRepository) throws JsonProcessingException {
+        MongoCollection<Document> collection = mongoClient.getDatabase(DATABASE).getCollection(MONGO_REPOSITORIES);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(mongoRepository);
         LOGGER.log(Level.INFO, "Attempting insertion of json: " + json);
         try {
             collection.insertOne(Document.parse(json));
@@ -60,9 +61,10 @@ public class MongoConnection {
         return collection.find().iterator();
     }
 
-    public void replaceOne(Repository repository) {
-        MongoCollection<Document> collection = mongoClient.getDatabase(DATABASE).getCollection(REPOSITORIES);
-        String json = toJson(repository);
+    public void replaceOne(MongoRepository mongoRepository) throws JsonProcessingException {
+        MongoCollection<Document> collection = mongoClient.getDatabase(DATABASE).getCollection(MONGO_REPOSITORIES);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(mongoRepository);
         JsonParser parser = new JsonParser();
         double id = parser.parse(json).getAsJsonObject().get("_id").getAsDouble();
         LOGGER.log(Level.INFO, "Attempting insertion of json: " + json);
@@ -74,20 +76,5 @@ public class MongoConnection {
             LOGGER.log(Level.WARNING, e.getMessage());
         }
         LOGGER.log(Level.INFO, "Replace succes");
-    }
-
-
-    private String toJson(Repository repository) {
-        Gson gson = new Gson();
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("name", repository.getGhRepository().getFullName());
-        map.put("hasDockerCompose", repository.hasDockerCompose());
-        map.put("nbOfContributors", repository.getNbOfContributors());
-        map.put("nbOfCommits", repository.getNbOfCommits());
-        map.put("dockerPaths", repository.getDockerPaths().toArray());
-        map.put("versionEvolutionMap", repository.getVersionEvolutionMap());
-        map.put("dockerComposes", repository.getDockerComposes());
-
-        return gson.toJson(map);
     }
 }

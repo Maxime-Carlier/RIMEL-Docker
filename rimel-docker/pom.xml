@@ -36,6 +36,12 @@
             <artifactId>jackson-dataformat-yaml</artifactId>
             <version>2.9.3</version>
         </dependency>
+        <!-- Joda-Time library for date manipulation -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.9.9</version>
+        </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver</artifactId>

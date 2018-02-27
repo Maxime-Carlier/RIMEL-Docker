@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import fr.polytech.rimel.rimeldocker.api.APIException;
 import fr.polytech.rimel.rimeldocker.api.GithubClientFactory;
+import fr.polytech.rimel.rimeldocker.model.MongoRepository;
 import fr.polytech.rimel.rimeldocker.model.Repository;
 import fr.polytech.rimel.rimeldocker.persistance.MongoConnection;
 import fr.polytech.rimel.rimeldocker.transforms.CompareDCVersion;
@@ -78,7 +79,8 @@ public class Main {
                 if (repository != null) {
                     outputRepositories.add(repository);
                     /**Persistance**/
-                    mongoConnection.insert(repository);
+                    MongoRepository mongoRepository = MongoRepository.fromRepository(repository);
+                    mongoConnection.insert(mongoRepository);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

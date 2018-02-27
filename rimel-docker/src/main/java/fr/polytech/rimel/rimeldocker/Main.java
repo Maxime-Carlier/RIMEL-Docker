@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import fr.polytech.rimel.rimeldocker.api.APIException;
 import fr.polytech.rimel.rimeldocker.api.GithubClientFactory;
 import fr.polytech.rimel.rimeldocker.model.Repository;
+import fr.polytech.rimel.rimeldocker.persistance.MongoConnection;
 import fr.polytech.rimel.rimeldocker.transforms.CompareDCVersion;
 import fr.polytech.rimel.rimeldocker.transforms.ContributorProcessor;
 import fr.polytech.rimel.rimeldocker.transforms.HasDockerCompose;
@@ -50,6 +51,8 @@ public class Main {
             }
         }
         LOGGER.info("Got "+inputRepositories.size()+" repositories in the sample");
+        /**Persistance**/
+        MongoConnection mongoConnection = new MongoConnection();
 
         List<Repository> outputRepositories = new ArrayList<>();
         for(int i=0; i<inputRepositories.size();i++) {
@@ -74,6 +77,8 @@ public class Main {
                 // Step 6 : Final Check before adding the repository to the output
                 if (repository != null) {
                     outputRepositories.add(repository);
+                    /**Persistance**/
+                    mongoConnection.insert(repository);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

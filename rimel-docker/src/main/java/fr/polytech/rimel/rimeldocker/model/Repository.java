@@ -50,7 +50,7 @@ public class Repository {
     }
 
     public void setNbOfContributors(int nbOfContributors) {
-        nbOfContributors = nbOfContributors;
+        this.nbOfContributors = nbOfContributors;
     }
 
     public int getNbOfCommits() {
@@ -83,16 +83,6 @@ public class Repository {
 
     public void setDockerComposes(Map<String, List<DockerCompose>> dockerComposes) {
         this.dockerComposes = dockerComposes;
-    }
-
-    public Repository clone() {
-        Repository r = new Repository();
-        r.setGhRepository(this.ghRepository);
-        r.setHasDockerCompose(this.hasDockerCompose);
-        r.setDockerPaths(this.dockerPaths);
-        r.setVersionEvolutionMap(this.versionEvolutionMap);
-        r.setDockerComposes(this.dockerComposes);
-        return r;
     }
 
     @Override

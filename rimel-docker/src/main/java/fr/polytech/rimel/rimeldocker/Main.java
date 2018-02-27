@@ -8,10 +8,7 @@ import fr.polytech.rimel.rimeldocker.api.GithubClientFactory;
 import fr.polytech.rimel.rimeldocker.model.MongoRepository;
 import fr.polytech.rimel.rimeldocker.model.Repository;
 import fr.polytech.rimel.rimeldocker.persistance.MongoConnection;
-import fr.polytech.rimel.rimeldocker.transforms.CompareDCVersion;
-import fr.polytech.rimel.rimeldocker.transforms.ContributorProcessor;
-import fr.polytech.rimel.rimeldocker.transforms.HasDockerCompose;
-import fr.polytech.rimel.rimeldocker.transforms.TraceDockerCompose;
+import fr.polytech.rimel.rimeldocker.transforms.*;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.PagedSearchIterable;
@@ -19,11 +16,14 @@ import org.kohsuke.github.PagedSearchIterable;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 public class Main {
 
     private static Logger LOGGER = Logger.getLogger(Main.class.getName());
+
+    private static AtomicInteger count = new AtomicInteger(0);
 
     public static void main(String[] args) throws APIException, IOException {
 
@@ -57,17 +57,20 @@ public class Main {
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("data.json")));
         writer.write("[");
         List<Repository> outputRepositories = new ArrayList<>();
-        for(int i=0; i<inputRepositories.size();i++) {
+        inputRepositories.parallelStream().forEach((repository -> {
             try {
-                LOGGER.info("Now processing repository #" + i + " " + inputRepositories.get(i).getGhRepository().getFullName());
-                Repository repository = inputRepositories.get(i);
+                int newCount = count.incrementAndGet();
+                LOGGER.info("Now processing repository #" + newCount + " " + repository.getGhRepository().getFullName());
                 // Step 2 : Retrieve the number of contributor in the project
                 repository = ContributorProcessor.processElement(repository);
+
+                // Step 3 : Retrieve the number of commits made
+                //repository = CommitProcessor.processElement(repository);
 
                 // Step 3 : Retrieve the path of all the Docker compose files
                 repository = HasDockerCompose.processElement(repository);
                 if (repository == null) {
-                    continue;
+                    return;
                 }
 
                 // Step 4 : Retrieve the docker compose change
@@ -82,13 +85,16 @@ public class Main {
                     /**Persistance**/
                     MongoRepository mongoRepository = MongoRepository.fromRepository(repository);
                     String json = gson.toJson(mongoRepository);
-                    writer.write(json+",");
+                    synchronized (writer) {
+                        writer.write(json+",");
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                continue;
+                return;
             }
-        }
+        }));
+
         writer.write("]");
         writer.close();
         System.out.println("END");

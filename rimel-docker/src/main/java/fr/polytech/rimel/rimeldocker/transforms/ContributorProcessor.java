@@ -14,8 +14,7 @@ public class ContributorProcessor {
 
     public static Repository processElement(Repository repository) throws IOException {
         int nbUsers = repository.getGhRepository().listContributors().asSet().size();
-        Repository result = repository.clone();
-        result.setNbOfContributors(nbUsers);
-        return result;
+        repository.setNbOfContributors(nbUsers);
+        return repository;
     }
 }

@@ -4,6 +4,7 @@ import fr.polytech.rimel.rimeldocker.api.APIException;
 import fr.polytech.rimel.rimeldocker.model.Repository;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.PagedIterable;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,8 +16,7 @@ public class CommitProcessor {
         GHRepository githubRepo = repository.getGhRepository();
         List<GHCommit> commits =githubRepo.listCommits().asList();
         int nbCommit = commits.size();
-        Repository result = repository.clone();
-        result.setNbOfCommits(nbCommit);
-        return result;
+        repository.setNbOfCommits(nbCommit);
+        return repository;
     }
 }
